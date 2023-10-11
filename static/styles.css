@@ -1,0 +1,98 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+
+/* 제목 스타일 */
+h1 {
+  text-align: center;
+  background-color: #333;
+  color: white;
+  padding: 10px;
+}
+
+/* 폼 스타일 */
+form {
+  width: 60%;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 입력 필드 스타일 */
+label {
+  font-weight: bold;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+button {
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* 결과 테이블 스타일 */
+table {
+  width: 60%;
+  margin: 20px auto;
+  border-collapse: collapse;
+}
+
+table,
+th,
+td {
+  border: 1px solid #333;
+  text-align: center;
+}
+
+th,
+td {
+  padding: 10px;
+}
+
+.input-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.input-item {
+  width: 45%; /* 두 입력 필드를 공평하게 나누도록 조절 가능 */
+}
+
+.input-item input {
+  width: 93%; /* 또는 원하는 너비 값으로 수정 가능 */
+}
+
+.total {
+  margin: 10px;
+}
+
+/* p 태그가 가운데 정렬 */
+.desc {
+  text-align: center;
+  font-size: 1.2em;
+  margin-bottom: 30px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+}

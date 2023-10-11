@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>타이타닉 생존 예측</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+
+  <body>
+    <h1>타이타닉 생존 예측</h1>
+    <form
+      action="/predict"
+      method="POST">
+      <div>
+        <div class="input-group">
+          <div class="input-item">
+            <label for="Pclass">Pclass:</label>
+            <select
+              id="Pclass"
+              name="Pclass"
+              required>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <div class="input-item">
+            <label for="Name">Name ("Mr. Mrs. etc..."):</label>
+            <input
+              type="text"
+              id="Name"
+              name="Name"
+              required />
+          </div>
+        </div>
+        <div class="input-group">
+          <div class="input-item">
+            <label for="Sex">Sex (male or female):</label>
+            <select
+              id="Sex"
+              name="Sex"
+              required>
+              <option value="male">male</option>
+              <option value="female">female</option>
+            </select>
+          </div>
+          <div class="input-item">
+            <label for="Age">Age:</label>
+            <input
+              type="number"
+              id="Age"
+              name="Age"
+              required />
+          </div>
+        </div>
+        <div class="input-group">
+          <div class="input-item">
+            <label for="SibSp">SibSp (형제자매/배우자 수):</label>
+            <input
+              type="number"
+              id="SibSp"
+              name="SibSp"
+              required />
+          </div>
+          <div class="input-item">
+            <label for="Parch">Parch (부모/자녀 수):</label>
+
+            <input
+              type="number"
+              id="Parch"
+              name="Parch"
+              required />
+          </div>
+        </div>
+        <div class="input-group">
+          <div class="input-item">
+            <label for="Ticket">Ticket (티켓번호: A/5 2446, 11232, etc):</label>
+            <input
+              type="text"
+              id="Ticket"
+              name="Ticket"
+              required />
+          </div>
+          <div class="input-item">
+            <label for="Fare">Fare:</label>
+            <input
+              type="number"
+              id="Fare"
+              name="Fare"
+              required />
+          </div>
+        </div>
+        <div class="input-group">
+          <div class="input-item">
+            <label for="Cabin">Cabin (객실번호):</label>
+            <input
+              type="text"
+              id="Cabin"
+              name="Cabin"
+              required />
+          </div>
+
+          <div class="input-item">
+            <label for="Embarked">Embarked (승선 항구):</label>
+            <select
+              id="Embarked"
+              name="Embarked"
+              required>
+              <option value="S">S</option>
+              <option value="C">C</option>
+              <option value="Q">Q</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit">예측</button>
+      </div>
+    </form>
+
+    <hr />
+    <div class="header">
+      <h2>입력 데이터</h2>
+    </div>
+    <table
+      border="1"
+      style="font-size: small">
+      <thead>
+        <tr>
+          <th style="width: 100%">변수</th>
+          {% for col, val in df.items() %}
+          <td>{{ col }}</td>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>값</th>
+          {% for col, val in df.items() %}
+          <td>{{ val.values }}</td>
+          {% endfor %}
+        </tr>
+      </tbody>
+    </table>
+
+    <hr />
+    <div class="header">
+      <h2>예측 결과:</h2>
+    </div>
+    <div class="desc">
+      <p>
+        {% if prediction == 0 %} 생존 여부: 사망 {% else %} 생존 여부: 생존 {%
+        endif %}
+      </p>
+
+      {% if pred_proba is defined %}
+
+      <p>
+        확률: {% if prediction == 0 %} {{ pred_proba[0][0] }} {% else %} {{
+        pred_proba[0][1] }} {% endif %}
+      </p>
+      {% else %}
+      <p>확률: (확률 데이터 없음)</p>
+      {% endif %}
+    </div>
+  </body>
+</html>

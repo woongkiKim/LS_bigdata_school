@@ -1,0 +1,103 @@
+import pandas as pd
+
+
+class DataCleansing:
+
+    def __init__(self):
+
+        ## 요금 범위
+        self.fare_ranges = [  0.        ,   7.2292    ,   7.75      ,   7.8958    ,
+                            8.05      ,  10.5       ,  13.        ,  15.85      ,
+                            24.        ,  26.55      ,  33.30769231,  55.9       ,
+                            83.1583    , 512.3292    ]
+        ## 나이 범위
+        self.age_ranges = [ 0.42, 16.  , 20.  , 22.  , 25.  , 26.  , 30.  , 34.  , 40.  ,
+                            47.  , 80.  ]
+        ## 범주형 변수
+        self.cat_cols = ['Sex', 'Embarked', 'Deck', 'Family_Size_Class', 'Title', 'Pclass']
+
+        # 원래 있는 칼럼 목록
+        self.columns_to_add = ['Age', 'Fare', 'Ticket_count', 'Is_Married', 'Sex_female', 'Sex_male',
+                        'Embarked_C', 'Embarked_Q', 'Embarked_S', 'Deck_ABC', 'Deck_DE',
+                        'Deck_FG', 'Deck_Z', 'Family_Size_Class_Alone',
+                        'Family_Size_Class_Large', 'Family_Size_Class_Medium',
+                        'Family_Size_Class_Small', 'Title_Master', 'Title_Mr', 'Title_Mrs',
+                        'Title_Other', 'Pclass_1', 'Pclass_2', 'Pclass_3']
+        
+    def preprocess(self, df):
+
+        from sklearn.preprocessing import OneHotEncoder
+        from sklearn.preprocessing import StandardScaler
+
+        scaler = StandardScaler()
+
+        df['Fare'] = df['Fare'].astype(float)
+        df['Age'] = df['Age'].astype(int)
+        df['SibSp'] = df['SibSp'].astype(int)
+        df['Parch'] = df['Parch'].astype(int)
+
+        df['Cabin'].fillna('Z', inplace=True)
+
+        df['Deck'] = df['Cabin'].str[0]
+        df['Deck'] = df['Deck'].replace(['A', 'B', 'C'], 'ABC')
+        df['Deck'] = df['Deck'].replace(['D', 'E'], 'DE')
+        df['Deck'] = df['Deck'].replace(['F', 'G'], 'FG')
+        df['Deck'] = df['Deck'].replace('T', 'Z')
+        df.loc[~df['Deck'].isin(['ABC', 'DE', 'FG']), 'Deck'] = 'Z'
+
+        df['Fare'] = pd.cut(df['Fare'], bins=self.fare_ranges, include_lowest=True)
+        df['Fare'] = df['Fare'].astype('category')
+        df['Fare'] = df['Fare'].cat.codes
+
+        
+        df['Age'] = pd.cut(df['Age'], bins=self.age_ranges, include_lowest=True)
+        df['Age'] = df['Age'].astype('category')
+        df['Age'] = df['Age'].cat.codes
+
+        
+        df['Family_Size'] = df['SibSp'] + df['Parch'] + 1
+        df['Family_Size_Class'] = df['Family_Size'].apply(
+            lambda x: 'Alone' if x == 1 else 
+            ('Small' if x < 5 else 
+            ('Medium' if x < 7 else 'Large'))
+        )
+
+        df['Ticket_count'] = df.groupby('Ticket')['Ticket'].transform('count')
+        df['Title'] = df['Name'].str.extract('([A-Za-z]+)\.', expand=False)
+        df['Title'] = df['Title'].replace(['Mlle', 'Ms','Countess','Dona'], 'Miss')
+        df['Title'] = df['Title'].replace(['Mme','Lady'], 'Mrs')
+        # df['Title'] = df['Title'].replace(['Capt', 'Col', 'Don', 'Jonkheer', 'Major', 'Sir','Rev','Dr'], 'Other')
+        df.loc[~df['Title'].isin(['Miss', 'Mrs', 'Mr']), 'Title'] = 'Other'
+
+        df['Is_Married'] = 0
+        df['Is_Married'].loc[df['Title'] == 'Mrs'] = 1
+        df['Title'] = df['Title'].replace(['Mrs', 'Miss','Ms'], 'Mrs')
+        
+        encoder = OneHotEncoder(sparse=False)
+
+        encoder.fit(df[self.cat_cols])
+        encoded_df = encoder.transform(df[self.cat_cols])
+        test_encoded_JR_df = pd.DataFrame(encoded_df, columns=encoder.get_feature_names_out(self.cat_cols))
+
+        dfs = df.drop(self.cat_cols, axis=1)
+        dfs = pd.concat([dfs, test_encoded_JR_df], axis=1)
+
+
+        Jack_Rose_test_df = dfs.drop(['Name','Parch', 'Ticket', 'SibSp',
+            'Cabin', 'Family_Size'], axis=1)
+        for i in ['Ticket_count', 'Age', 'Fare']:
+            Jack_Rose_test_df[i] = scaler.fit_transform(Jack_Rose_test_df[i].values.reshape(-1, 1))
+
+        
+
+        # 데이터프레임에 없는 칼럼을 0으로 설정
+        for column in self.columns_to_add:
+            if column not in Jack_Rose_test_df.columns:
+                Jack_Rose_test_df[column] = 0
+
+        result_df = Jack_Rose_test_df[self.columns_to_add]
+
+        print("⭐️ 전처리 후 데이터셋입니다.", result_df)
+
+        return result_df
+    
