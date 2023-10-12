@@ -24,6 +24,23 @@ class DataCleansing:
                         'Family_Size_Class_Small', 'Title_Master', 'Title_Mr', 'Title_Mrs',
                         'Title_Other', 'Pclass_1', 'Pclass_2', 'Pclass_3']
         
+        # 학습데이터 Ticket 가중치
+        self.ticket_weight = pd.read_csv('./data/titanic/ticket_weight.csv')
+        self.ticket_weight = self.ticket_weight.set_index('Ticket')['Weight'].to_dict()
+
+        # 학습데이터 Age 정규화 통계치
+        self.age_mean = 4.32210999
+        self.age_std = 2.87971488
+
+        # 학습데이터 Fare 정규화 통계치
+        self.fare_mean = 5.91133558
+        self.fare_std = 3.78049333
+
+        # 학습데이터 Ticket_count 정규화 통계치
+        self.ticket_count_mean = 1.78787879
+        self.ticket_count_std = 1.36114174
+
+        
     def preprocess(self, df):
 
         from sklearn.preprocessing import OneHotEncoder
@@ -62,7 +79,13 @@ class DataCleansing:
             ('Medium' if x < 7 else 'Large'))
         )
 
-        df['Ticket_count'] = df.groupby('Ticket')['Ticket'].transform('count')
+        # Ticket 가중치
+        df['Ticket'] = df['Ticket'].map(self.ticket_weight)
+        df['Ticket'].fillna(1, inplace=True)
+        df['Ticket_count'] = ''
+        df['Ticket_count'] = df['Ticket']
+
+        print("✅ \n", df)
         df['Title'] = df['Name'].str.extract('([A-Za-z]+)\.', expand=False)
         df['Title'] = df['Title'].replace(['Mlle', 'Ms','Countess','Dona'], 'Miss')
         df['Title'] = df['Title'].replace(['Mme','Lady'], 'Mrs')
@@ -86,9 +109,12 @@ class DataCleansing:
         Jack_Rose_test_df = dfs.drop(['Name','Parch', 'Ticket', 'SibSp',
             'Cabin', 'Family_Size'], axis=1)
         for i in ['Ticket_count', 'Age', 'Fare']:
-            Jack_Rose_test_df[i] = scaler.fit_transform(Jack_Rose_test_df[i].values.reshape(-1, 1))
-
-        
+            if i == 'Ticket_count':
+                Jack_Rose_test_df[i] = (Jack_Rose_test_df[i] - self.ticket_count_mean) / self.ticket_count_std
+            elif i == 'Age':
+                Jack_Rose_test_df[i] = (Jack_Rose_test_df[i] - self.age_mean) / self.age_std
+            elif i == 'Fare':
+                Jack_Rose_test_df[i] = (Jack_Rose_test_df[i] - self.fare_mean) / self.fare_std
 
         # 데이터프레임에 없는 칼럼을 0으로 설정
         for column in self.columns_to_add:
