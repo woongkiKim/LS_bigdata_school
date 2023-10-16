@@ -1,4 +1,5 @@
 import pandas as pd
+from sklearn.preprocessing import OneHotEncoder
 
 
 class DataCleansing:
@@ -6,13 +7,13 @@ class DataCleansing:
     def __init__(self):
 
         ## 요금 범위
-        self.fare_ranges = [  0.        ,   7.2292    ,   7.75      ,   7.8958    ,
-                            8.05      ,  10.5       ,  13.        ,  15.85      ,
-                            24.        ,  26.55      ,  33.30769231,  55.9       ,
-                            83.1583    , 512.3292    ]
+        self.fare_ranges = [  0, 7.2292, 7.75, 7.8958,
+                            8.05, 10.5, 13, 15.85,
+                            24, 26.55, 33.30769231, 55.9,
+                            83.1583, 512.3292]
         ## 나이 범위
-        self.age_ranges = [ 0.42, 16.  , 20.  , 22.  , 25.  , 26.  , 30.  , 34.  , 40.  ,
-                            47.  , 80.  ]
+        self.age_ranges = [ 0.42, 16, 20, 22, 25, 26, 30, 34, 40,
+                            47, 80]
         ## 범주형 변수
         self.cat_cols = ['Sex', 'Embarked', 'Deck', 'Family_Size_Class', 'Title', 'Pclass']
 
@@ -42,11 +43,6 @@ class DataCleansing:
 
         
     def preprocess(self, df):
-
-        from sklearn.preprocessing import OneHotEncoder
-        from sklearn.preprocessing import StandardScaler
-
-        scaler = StandardScaler()
 
         df['Fare'] = df['Fare'].astype(float)
         df['Age'] = df['Age'].astype(int)
@@ -89,7 +85,6 @@ class DataCleansing:
         df['Title'] = df['Name'].str.extract('([A-Za-z]+)\.', expand=False)
         df['Title'] = df['Title'].replace(['Mlle', 'Ms','Countess','Dona'], 'Miss')
         df['Title'] = df['Title'].replace(['Mme','Lady'], 'Mrs')
-        # df['Title'] = df['Title'].replace(['Capt', 'Col', 'Don', 'Jonkheer', 'Major', 'Sir','Rev','Dr'], 'Other')
         df.loc[~df['Title'].isin(['Miss', 'Mrs', 'Mr']), 'Title'] = 'Other'
 
         df['Is_Married'] = 0
