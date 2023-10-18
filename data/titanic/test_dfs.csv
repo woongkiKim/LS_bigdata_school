@@ -1,0 +1,2 @@
+Age,Fare,Ticket_count,Is_Married,Sex_female,Sex_male,Embarked_C,Embarked_Q,Embarked_S,Deck_ABC,Deck_DE,Deck_FG,Deck_Z,Family_Size_Class_Alone,Family_Size_Class_Large,Family_Size_Class_Medium,Family_Size_Class_Small,Title_Master,Title_Mr,Title_Mrs,Title_Other,Pclass_1,Pclass_2,Pclass_3
+-1.1536246220320259,1.610547589565513,-0.5788366977857867,0,0,1.0,0,0,1.0,0,1.0,0,0,1.0,0,0,0,1.0,0,0,0,1.0,0,0

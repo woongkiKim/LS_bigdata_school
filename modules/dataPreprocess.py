@@ -85,7 +85,7 @@ class DataCleansing:
         df['Title'] = df['Name'].str.extract('([A-Za-z]+)\.', expand=False)
         df['Title'] = df['Title'].replace(['Mlle', 'Ms','Countess','Dona'], 'Miss')
         df['Title'] = df['Title'].replace(['Mme','Lady'], 'Mrs')
-        df.loc[~df['Title'].isin(['Miss', 'Mrs', 'Mr']), 'Title'] = 'Other'
+        df.loc[~df['Title'].isin(['Miss', 'Mrs', 'Mr','Master']), 'Title'] = 'Other'
 
         df['Is_Married'] = 0
         df['Is_Married'].loc[df['Title'] == 'Mrs'] = 1
@@ -117,6 +117,8 @@ class DataCleansing:
                 Jack_Rose_test_df[column] = 0
 
         result_df = Jack_Rose_test_df[self.columns_to_add]
+
+        result_df.to_csv('./data/titanic/test_dfs.csv', index=False)
 
         print("⭐️ 전처리 후 데이터셋입니다.", result_df)
 

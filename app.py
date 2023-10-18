@@ -11,7 +11,7 @@ cleaner = DataCleansing()
 app = Flask(__name__)
 
 # 모델 로드
-model = joblib.load('best_rf_model.pkl')  # 모델 파일 이름을 지정하세요
+model = joblib.load('best_rf_model.pkl')
 
 @app.route("/")
 def index():
